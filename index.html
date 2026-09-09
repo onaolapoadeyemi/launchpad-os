@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Startup Founder Dashboard & SAFE Funding Simulator</title>
+    <!-- Tailwind CSS for rich, modern enterprise layouts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+        }
+        /* Custom scrollbar for sleeker dashboard feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col antialiased">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-400 border border-emerald-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight text-white">LaunchPad OS</h1>
+                <p class="text-xs text-slate-400">Tech Founder Equity, SAFE Dilution & Strategy Accelerator</p>
+            </div>
+        </div>
+        
+        <!-- Tab Switches -->
+        <nav class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto overflow-x-auto">
+            <button onclick="switchTab('simulator')" id="btn-tab-simulator" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 bg-emerald-500 text-white shadow-md shadow-emerald-500/10">
+                📊 SAFE Cap Table Simulator
+            </button>
+            <button onclick="switchTab('runway')" id="btn-tab-runway" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200">
+                ⏱️ Runway Calculator
+            </button>
+            <button onclick="switchTab('playbook')" id="btn-tab-playbook" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200">
+                🗺️ Startup Playbook
+            </button>
+            <button onclick="switchTab('pitch')" id="btn-tab-pitch" class="tab-btn px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-slate-400 hover:text-slate-200">
+                📈 Pitch Deck Scorer
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 p-4 lg:p-8 max-w-7xl w-full mx-auto">
+        
+        <!-- SECTION 1: CAP TABLE & SAFE SIMULATOR -->
+        <section id="tab-simulator" class="tab-content block space-y-6 animate-fadeIn">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Left Input Controls Pane -->
+                <div class="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
+                    <div>
+                        <h2 class="text-lg font-semibold text-white mb-1">Funding Round Parameters</h2>
+                        <p class="text-xs text-slate-400">Simulate standard YC Post-Money SAFE dilution converting into priced growth rounds.</p>
+                    </div>
+
+                    <!-- Round 0: Inception -->
+                    <div class="space-y-4 pt-2 border-t border-slate-800">
+                        <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Round 0: Founders Initial Equity</span>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Founder 1 (You) Initial Shares</label>
+                            <input type="number" id="input-f1-shares" value="4000000" oninput="calculateCapTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Co-Founder Initial Shares</label>
+                            <input type="number" id="input-f2-shares" value="1000000" oninput="calculateCapTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-white">
+                        </div>
+                    </div>
+
+                    <!-- Round 1: Post-Money SAFE Note Round -->
+                    <div class="space-y-4 pt-4 border-t border-slate-800">
+                        <span class="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Round 1: Post-Money SAFE Note</span>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">SAFE Capital Invested ($)</label>
+                            <input type="number" id="input-safe-raised" value="500000" oninput="calculateCapTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Valuation Cap ($)</label>
+                            <input type="number" id="input-safe-cap" value="2500000" oninput="calculateCapTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-cyan-500 text-white">
+                            <p class="text-[10px] text-slate-500 mt-1">Locks investor ownership percentage prior to the priced round.</p>
+                        </div>
+                    </div>
+
+                    <!-- Round 2: Series A Priced Equity Round -->
+                    <div class="space-y-4 pt-4 border-t border-slate-800">
+                        <span class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Round 2: Series A Priced Round</span>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">New Institutional Capital Raised ($)</label>
+                            <input type="number" id="input-a-raised" value="3000000" oninput="calculateCapTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Pre-Money Valuation ($)</label>
+                            <input type="number" id="input-a-pre" value="12000000" oninput="calculateCapTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">New Option Pool Created (%)</label>
+                            <input type="range" id="input-a-pool" min="0" max="25" value="10" oninput="updateSliderLabel('a-pool-lbl', this.value); calculateCapTable();" class="w-full accent-indigo-500 bg-slate-950 h-2 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                                <span>0%</span>
+                                <span id="a-pool-lbl" class="font-medium text-indigo-400">10%</span>
+                                <span>25%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Analytics & Visualizations Dashboard Area -->
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <!-- Metrics Row Summary -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                            <span class="text-xs font-medium text-slate-400">Your Equity Value (Post-Series A)</span>
+                            <span id="metric-founder-value" class="text-xl font-bold text-emerald-400 mt-2">$0</span>
+                            <span id="metric-founder-pct" class="text-[11px] text-slate-400 mt-1">0% ownership</span>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                            <span class="text-xs font-medium text-slate-400">Implied SAFE Ownership</span>
+                            <span id="metric-safe-ownership" class="text-xl font-bold text-cyan-400 mt-2">0%</span>
+                            <span id="metric-safe-dilution" class="text-[11px] text-slate-400 mt-1">Fixed pre-Series A stake</span>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                            <span class="text-xs font-medium text-slate-400">Series A Post-Money Valuation</span>
+                            <span id="metric-a-post" class="text-xl font-bold text-indigo-400 mt-2">$0</span>
+                            <span id="metric-a-dilution" class="text-[11px] text-slate-400 mt-1">Total outstanding dilution slots</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Visual Share Distribution Bars -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl">
+                        <div>
+                            <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Equity Ownership Progression Chart</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Visualize your dilution profile from inception to SAFE allocation and conversion.</p>
+                        </div>
+
+                        <!-- Bar 1: Inception -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-medium">
+                                <span class="text-slate-300">Phase 1: Bootstrapped Inception</span>
+                                <span class="text-slate-400 font-semibold" id="bar-inc-total">5,000,000 Shares</span>
+                            </div>
+                            <div id="bar-inception-container" class="h-6 w-full rounded-lg overflow-hidden flex bg-slate-950 border border-slate-800">
+                                <!-- Filled by JS calculations -->
+                            </div>
+                        </div>
+
+                        <!-- Bar 2: SAFE Issuance Horizon -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-medium">
+                                <span class="text-slate-300">Phase 2: SAFE Note Issuing (Pre-Priced Stage)</span>
+                                <span class="text-slate-400 font-semibold" id="bar-safe-total">5,000,000 Shares (Unconverted)</span>
+                            </div>
+                            <div id="bar-safe-container" class="h-6 w-full rounded-lg overflow-hidden flex bg-slate-950 border border-slate-800">
+                                <!-- Filled by JS calculations -->
+                            </div>
+                        </div>
+
+                        <!-- Bar 3: Series A Conversion -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-medium">
+                                <span class="text-slate-300">Phase 3: Series A Capital Conversion & Options Allocation</span>
+                                <span class="text-slate-400 font-semibold" id="bar-a-total">0 Shares</span>
+                            </div>
+                            <div id="bar-a-container" class="h-6 w-full rounded-lg overflow-hidden flex bg-slate-950 border border-slate-800">
+                                <!-- Filled by JS calculations -->
+                            </div>
+                        </div>
+
+                        <!-- Legend Details overlay -->
+                        <div class="flex flex-wrap gap-x-4 gap-y-2 pt-2 border-t border-slate-800/60 text-xs">
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-500 rounded-sm"></div><span class="text-slate-300">Founder 1</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-emerald-700 rounded-sm"></div><span class="text-slate-300">Co-Founder</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-cyan-500 rounded-sm"></div><span class="text-slate-300">SAFE Investors</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-indigo-500 rounded-sm"></div><span class="text-slate-300">Series A Investors</span></div>
+                            <div class="flex items-center gap-1.5"><div class="w-3 h-3 bg-slate-500 rounded-sm"></div><span class="text-slate-300">Option Pool (Talent)</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Granular Ledger Matrix Table -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-slate-800">
+                            <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Detailed Cap Table Ledger</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Exact distributions, share metrics, and implied enterprise values tracking SAFE ratchet conversion prices.</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-950/60 border-b border-slate-800 text-slate-300 font-medium">
+                                        <th class="p-3">Stakeholder Entity</th>
+                                        <th class="p-3 text-right">Inception %</th>
+                                        <th class="p-3 text-right">Pre-Series A %</th>
+                                        <th class="p-3 text-right">Post-Series A %</th>
+                                        <th class="p-3 text-right">Post-Series A Shares</th>
+                                        <th class="p-3 text-right text-emerald-400">Implied Equity Value ($)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cap-table-tbody" class="divide-y divide-slate-800/50">
+                                    <!-- Populated programmatically via js engine updates -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: RUNWAY & BURN RATE CALCULATOR -->
+        <section id="tab-runway" class="tab-content hidden space-y-6 animate-fadeIn">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Financial input control modules -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-xl lg:col-span-1">
+                    <div>
+                        <h2 class="text-lg font-semibold text-white mb-1">Financial Operations Metrics</h2>
+                        <p class="text-xs text-slate-400">Model capital runway to optimize milestones and hiring velocity.</p>
+                    </div>
+
+                    <div class="space-y-4 pt-2 border-t border-slate-800">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Starting Cash Reserves ($)</label>
+                            <input type="number" id="runway-cash" value="250000" oninput="calculateRunway()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Monthly Gross Operating Expenses ($)</label>
+                            <input type="number" id="runway-burn" value="25000" oninput="calculateRunway()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-white">
+                            <p class="text-[10px] text-slate-500 mt-1">Sum of server infrastructure, core salaries, legal, tools.</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Monthly Recurring Revenue (MRR) ($)</label>
+                            <input type="number" id="runway-revenue" value="10000" oninput="calculateRunway()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-emerald-500 text-white">
+                            <p class="text-[10px] text-slate-500 mt-1">Inbound cash receipts from customer product subscriptions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Runway Analysis Reports Output Display -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+                            <span class="text-xs font-medium text-slate-400">Net Monthly Cash Burn Rate</span>
+                            <span id="runway-net-burn" class="text-2xl font-bold text-rose-400 mt-2">$0</span>
+                            <span class="text-[11px] text-slate-500 mt-1">Gross Burn minus Inbound Customer Revenue</span>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between">
+                            <span class="text-xs font-medium text-slate-400">Calculated Survival Runway Horizon</span>
+                            <span id="runway-months" class="text-2xl font-bold text-emerald-400 mt-2">0 Months</span>
+                            <span id="runway-status-sub" class="text-[11px] text-slate-400 mt-1">Time until next fundraising or break-even threshold</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Visual Cash Burn Simulation Over Time -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                        <div>
+                            <h3 class="text-sm font-semibold text-white uppercase tracking-wider">12-Month Projected Liquidity Cash Depletion Curve</h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Forecast of month-by-month cash status based on current burns.</p>
+                        </div>
+
+                        <!-- Responsive Custom SVG Chart Frame container -->
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <div id="chart-runway-container" class="w-full h-48 flex items-end justify-between pt-4 px-2">
+                                <!-- Bars rendered programmatically by the js execution matrix layer -->
+                            </div>
+                            <!-- Labels line horizontal mapping grid -->
+                            <div class="flex justify-between text-[10px] text-slate-500 font-medium px-2 mt-2 pt-2 border-t border-slate-800">
+                                <span>Month 0</span>
+                                <span>Month 3</span>
+                                <span>Month 6</span>
+                                <span>Month 9</span>
+                                <span>Month 12</span>
+                            </div>
+                        </div>
+
+                        <!-- Actionable Financial Health Advisory Notification Framework -->
+                        <div id="runway-advisory-box" class="p-4 rounded-xl border flex items-start gap-3">
+                            <!-- Injected dynamically via the JavaScript monitoring architecture -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: FOUNDER'S STEP-BY-STEP PLAYBOOK -->
+        <section id="tab-playbook" class="tab-content hidden space-y-6 animate-fadeIn">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-white">The Engineering Entrepreneurship Framework</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">A comprehensive roadmap designed to transition core software and hardware technology into scalable ventures.</p>
+                </div>
+
+                <!-- Vertical Interactive Sequential Module Blocks Accordion Stack -->
+                <div class="space-y-4">
+                    
+                    <!-- Module Item 1 -->
+                    <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-950/40">
+                        <button onclick="togglePlaybookAccordion('pb-m1')" class="w-full px-5 py-4 flex justify-between items-center hover:bg-slate-800/40 text-left transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold w-6 h-6 rounded-md flex items-center justify-center">1</span>
+                                <h3 class="text-sm font-semibold text-white">Technical MVP Scaffolding & Product-Market Fit</h3>
+                            </div>
+                            <svg id="arrow-pb-m1" class="h-4 w-4 text-slate-400 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id="body-pb-m1" class="px-5 pb-5 pt-1 text-xs text-slate-300 space-y-3 hidden border-t border-slate-800/60 bg-slate-900/20">
+                            <p>For engineers, the biggest risk isn't failing to build the code; it's building a beautifully optimized product that <strong>nobody actually wants or pays for</strong>. Shift focus from flawless architecture optimization toward fast prototype loop deployment.</p>
+                            <ul class="list-disc pl-5 space-y-1.5 text-slate-400">
+                                <li><strong class="text-slate-200">The 80/20 Rule of MVP:</strong> Strip away secondary microservices, advanced caching layers, or complex multi-tenant controls until you validate the core value metric.</li>
+                                <li><strong class="text-slate-200">Problem-First Inquiries:</strong> Conduct at least 25 discovery calls with potential enterprise users. Never pitch your specific solution architecture; instead, ask them to quantify the exact daily hours or financial waste caused by their current fragmented operations.</li>
+                                <li><strong class="text-slate-200">Validation Metric:</strong> Target organic usage loops, high user retention, or upfront downpayments/letters of intent (LOI) before planning heavy refactoring phases.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Module Item 2 -->
+                    <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-950/40">
+                        <button onclick="togglePlaybookAccordion('pb-m2')" class="w-full px-5 py-4 flex justify-between items-center hover:bg-slate-800/40 text-left transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-bold w-6 h-6 rounded-md flex items-center justify-center">2</span>
+                                <h3 class="text-sm font-semibold text-white">Corporate Structure & IP Cleanliness Protocols</h3>
+                            </div>
+                            <svg id="arrow-pb-m2" class="h-4 w-4 text-slate-400 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id="body-pb-m2" class="px-5 pb-5 pt-1 text-xs text-slate-300 space-y-3 hidden border-t border-slate-800/60 bg-slate-900/20">
+                            <p>Before soliciting outside financing, your corporate baseline and legal framework must be ironclad to survive sophisticated venture capital due diligence.</p>
+                            <ul class="list-disc pl-5 space-y-1.5 text-slate-400">
+                                <li><strong class="text-slate-200">Delaware C-Corporation Standard:</strong> Institutional VCs almost exclusively require investments to route into a Delaware C-Corp framework due to clear corporate case histories and flexible governance laws.</li>
+                                <li><strong class="text-slate-200">Technology Assignment Agreements:</strong> Ensure every single line of early source code, CAD file, or system architecture schematic written by you or co-founders is explicitly assigned to the new corporate entity via signed IP transfers. Personal ownership breaks funding tracks.</li>
+                                <li><strong class="text-slate-200">File 83(b) Tax Elections:</strong> Critical tax protection rule. When receiving your founder shares subject to corporate vesting terms, file an 83(b) election with the IRS within 30 days to pay taxes on current minimal valuations rather than future high valuations at vesting milestones.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Module Item 3 -->
+                    <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-950/40">
+                        <button onclick="togglePlaybookAccordion('pb-m3')" class="w-full px-5 py-4 flex justify-between items-center hover:bg-slate-800/40 text-left transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-bold w-6 h-6 rounded-md flex items-center justify-center">3</span>
+                                <h3 class="text-sm font-semibold text-white">Deconstruct Fund Instruments: SAFE Notes vs Priced Equity Rounds</h3>
+                            </div>
+                            <svg id="arrow-pb-m3" class="h-4 w-4 text-slate-400 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id="body-pb-m3" class="px-5 pb-5 pt-1 text-xs text-slate-300 space-y-3 hidden border-t border-slate-800/60 bg-slate-900/20">
+                            <p>Understand the underlying mechanical contracts used to convert inbound dollars into permanent capitalization table dilution slots.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                                    <h4 class="font-semibold text-cyan-400 mb-1">SAFE Notes (Y Combinator Post-Money Standard)</h4>
+                                    <p class="text-slate-400 leading-relaxed">Simple Agreement for Future Equity. The post-money variant explicitly locks the investor's ownership percentage immediately prior to the new priced round based on the Valuation Cap. It helps defer formal legal share structural distributions early on.</p>
+                                </div>
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                                    <h4 class="font-semibold text-indigo-400 mb-1">Priced Equity Rounds</h4>
+                                    <p class="text-slate-400 leading-relaxed">Formal corporate actions where investors purchase new shares of preferred stock at an agreed-upon, concrete per-share valuation. Requires extensive legal board definitions, option pool creation rules, investor rights clauses, and deep accounting verification.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module Item 4 -->
+                    <div class="border border-slate-800 rounded-xl overflow-hidden bg-slate-950/40">
+                        <button onclick="togglePlaybookAccordion('pb-m4')" class="w-full px-5 py-4 flex justify-between items-center hover:bg-slate-800/40 text-left transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-bold w-6 h-6 rounded-md flex items-center justify-center">4</span>
+                                <h3 class="text-sm font-semibold text-white">Ecosystem Navigation: Local and Regional Funding Gateways</h3>
+                            </div>
+                            <svg id="arrow-pb-m4" class="h-4 w-4 text-slate-400 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                        <div id="body-pb-m4" class="px-5 pb-5 pt-1 text-xs text-slate-300 space-y-3 hidden border-t border-slate-800/60 bg-slate-900/20">
+                            <p>You don't need to be in Silicon Valley to kickstart a tech company. Leverage strategic infrastructure networks located directly within Tennessee:</p>
+                            <ul class="list-disc pl-5 space-y-1.5 text-slate-400">
+                                <li><strong class="text-slate-200">Launch Tennessee (Tennessee Technology Development Corp):</strong> A public-private partnership managing venture funds, commercialization programs, and equity matches to back early-stage founders operating state-wide.</li>
+                                <li><strong class="text-slate-200">Non-Dilutive Federal SBIR/STTR Matching Grants:</strong> If your electronics or computer engineering software contains high-risk, deeply innovative R&D, apply for Small Business Innovation Research grants. Launch Tennessee provides non-dilutive financial match awards to supplement successful federal grants.</li>
+                                <li><strong class="text-slate-200">MTSU Local Networks:</strong> Connect with regional networks to source co-development opportunities, validation testing, and early corporate pilot agreements.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: PITCH DECK SCORER & CHECKLIST -->
+        <section id="tab-pitch" class="tab-content hidden space-y-6 animate-fadeIn">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Slide Checklist Selection Block -->
+                <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-white mb-1">Venture Pitch Deck Quality Auditor</h2>
+                        <p class="text-xs text-slate-400">Audit your slide contents against professional institutional standards before scheduling pitches.</p>
+                    </div>
+
+                    <!-- Interactive Checklist Items Stack -->
+                    <div id="pitch-checklist-box" class="space-y-3 pt-2 border-t border-slate-800">
+                        <!-- Items rendered by Javascript iteration engine -->
+                    </div>
+                </div>
+
+                <!-- Live Score Card Summary & Diagnostics Side Pane -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl lg:col-span-1 flex flex-col justify-between space-y-6">
+                    <div class="text-center space-y-3">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Pitch Audit Score</span>
+                        
+                        <!-- Visual Circular Progress Gauging Architecture -->
+                        <div class="relative w-36 h-36 mx-auto flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="42" stroke="#1e293b" stroke-width="8" fill="none"/>
+                                <circle id="pitch-score-ring" cx="50" cy="50" r="42" stroke="#10b981" stroke-width="8" fill="none" stroke-dasharray="263.89" stroke-dashoffset="263.89" class="transition-all duration-500 ease-out"/>
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span id="pitch-score-text" class="text-3xl font-extrabold text-white">0%</span>
+                                <span class="text-[10px] text-slate-400 font-medium">Completeness</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic qualitative text based feedback diagnostics -->
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2 flex-1 flex flex-col justify-center">
+                        <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">Auditor Feedback</span>
+                        <p id="pitch-feedback-msg" class="text-xs text-slate-300 leading-relaxed">Select options on your pitch architecture list to compile asset evaluations.</p>
+                    </div>
+
+                    <button onclick="selectAllPitchItems()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700/80 rounded-xl text-xs font-semibold text-slate-200 transition-colors border border-slate-700/50">
+                        ⚡ Quick Audit Benchmark Perfect
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Global Application Footer bar -->
+    <footer class="mt-auto border-t border-slate-800 bg-slate-950 px-4 py-4 text-center text-xs text-slate-500">
+        LaunchPad Sandbox Engine &copy; 2026. Custom Engineering Startup Enterprise Accelerator Framework.
+    </footer>
+
+    <!-- CORE INTERACTIVE ENGINE JAVA SCRIPT CODE ARCHITECTURE -->
+    <script>
+        // Tab switching engine state controls
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-500', 'text-white', 'shadow-md', 'shadow-emerald-500/10');
+                btn.classList.add('text-slate-400', 'hover:text-slate-200');
+            });
+            
+            const activeBtn = document.getElementById(`btn-tab-${tabId}`);
+            activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200');
+            activeBtn.classList.add('bg-emerald-500', 'text-white', 'shadow-md', 'shadow-emerald-500/10');
+        }
+
+        function updateSliderLabel(id, val) {
+            document.getElementById(id).innerText = val + '%';
+        }
+
+        // --- SIMULATOR CAP TABLE MATH ENGINE (SAFE CONVERSION LOGIC) ---
+        function calculateCapTable() {
+            // Inputs safely read
+            const f1Shares = parseFloat(document.getElementById('input-f1-shares').value) || 0;
+            const f2Shares = parseFloat(document.getElementById('input-f2-shares').value) || 0;
+            const totalInitialShares = f1Shares + f2Shares;
+
+            // SAFE note variables (Post-Money SAFE architecture)
+            const safeRaised = parseFloat(document.getElementById('input-safe-raised').value) || 0;
+            const safeCap = parseFloat(document.getElementById('input-safe-cap').value) || 0;
+
+            // Post-Money SAFE sets investor ownership fixed *prior* to Series A new cash
+            const safeOwnershipPct = safeCap > 0 ? (safeRaised / safeCap) : 0;
+            document.getElementById('metric-safe-ownership').innerText = (safeOwnershipPct * 100).toFixed(1) + '%';
+
+            // Series A inputs read
+            const aRaised = parseFloat(document.getElementById('input-a-raised').value) || 0;
+            const aPreVal = parseFloat(document.getElementById('input-a-pre').value) || 0;
+            const aPoolPct = parseFloat(document.getElementById('input-a-pool').value) || 0;
+
+            const aPostVal = aPreVal + aRaised;
+            document.getElementById('metric-a-post').innerText = '$' + aPostVal.toLocaleString();
+
+            const aInvestorFraction = aPostVal > 0 ? (aRaised / aPostVal) : 0;
+            const aPoolFraction = aPoolPct / 100;
+
+            // Dilution factor mapping: New money and option pool take out their cuts from post-money
+            const sharedRemainingFraction = 1 - aInvestorFraction - aPoolFraction;
+
+            // In standard Post-Money SAFE conversion, the SAFE investor's locked percentage is relative 
+            // to the pre-money capitalization company value of Series A. 
+            // Therefore, both founders and SAFE share dilution from the new Series A cash and option pool.
+            const postAF1Pct = totalInitialShares > 0 ? (f1Shares / totalInitialShares) * (1 - safeOwnershipPct) * sharedRemainingFraction * 100 : 0;
+            const postAF2Pct = totalInitialShares > 0 ? (f2Shares / totalInitialShares) * (1 - safeOwnershipPct) * sharedRemainingFraction * 100 : 0;
+            const postASafePct = safeOwnershipPct * sharedRemainingFraction * 100;
+            const postAInvestorPct = aInvestorFraction * 100;
+            const postAPoolPct = aPoolFraction * 100;
+
+            // Calculate share denominators to reconstruct exact ledger counts
+            // Total shares post-A expands to accommodate Series A investor and pool fractions
+            const totalSharesPostA = sharedRemainingFraction > 0 ? (totalInitialShares / ((1 - safeOwnershipPct) * sharedRemainingFraction)) : totalInitialShares;
+            
+            const finalF1Shares = f1Shares;
+            const finalF2Shares = f2Shares;
+            const finalSafeShares = totalSharesPostA * (postASafePct / 100);
+            const finalInvestorShares = totalSharesPostA * (postAInvestorPct / 100);
+            const finalPoolShares = totalSharesPostA * (postAPoolPct / 100);
+
+            // Re-map pre-Series A benchmarks
+            const preAF1Pct = totalInitialShares > 0 ? (f1Shares / totalInitialShares) * (1 - safeOwnershipPct) * 100 : 0;
+            const preAF2Pct = totalInitialShares > 0 ? (f2Shares / totalInitialShares) * (1 - safeOwnershipPct) * 100 : 0;
+            const preASafePct = safeOwnershipPct * 100;
+
+            // Live updates of main founder wealth benchmarks cards
+            const finalFounderValue = (postAF1Pct / 100) * aPostVal;
+            document.getElementById('metric-founder-value').innerText = '$' + Math.round(finalFounderValue).toLocaleString();
+            document.getElementById('metric-founder-pct').innerText = postAF1Pct.toFixed(1) + '% startup ownership status';
+
+            document.getElementById('metric-safe-dilution').innerText = `SAFE Val Cap: $${safeCap.toLocaleString()}`;
+            document.getElementById('metric-a-dilution').innerText = `Founders net diluted to ${(postAF1Pct + postAF2Pct).toFixed(1)}% combined`;
+
+            // Totals text strings updates
+            document.getElementById('bar-inc-total').innerText = Math.round(totalInitialShares).toLocaleString() + " Shares";
+            document.getElementById('bar-safe-total').innerText = Math.round(totalInitialShares / (1 - safeOwnershipPct)).toLocaleString() + " Implied Shares";
+            document.getElementById('bar-a-total').innerText = Math.round(totalSharesPostA).toLocaleString() + " Total Shares";
+
+            // Update Visual Dynamic Progression Blocks
+            renderProgressionBar('bar-inception-container', [
+                { val: totalInitialShares > 0 ? (f1Shares/totalInitialShares)*100 : 0, color: 'bg-emerald-500' },
+                { val: totalInitialShares > 0 ? (f2Shares/totalInitialShares)*100 : 0, color: 'bg-emerald-700' }
+            ]);
+
+            renderProgressionBar('bar-safe-container', [
+                { val: preAF1Pct, color: 'bg-emerald-500' },
+                { val: preAF2Pct, color: 'bg-emerald-700' },
+                { val: preASafePct, color: 'bg-cyan-500' }
+            ]);
+
+            renderProgressionBar('bar-a-container', [
+                { val: postAF1Pct, color: 'bg-emerald-500' },
+                { val: postAF2Pct, color: 'bg-emerald-700' },
+                { val: postASafePct, color: 'bg-cyan-500' },
+                { val: postAInvestorPct, color: 'bg-indigo-500' },
+                { val: postAPoolPct, color: 'bg-slate-500' }
+            ]);
+
+            // Redraw table ledger matrix records dynamically
+            const tbody = document.getElementById('cap-table-tbody');
+            tbody.innerHTML = `
+                <tr class="hover:bg-slate-800/30 transition-colors">
+                    <td class="p-3 font-medium text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Founder 1 (You)</td>
+                    <td class="p-3 text-right text-slate-300">${(totalInitialShares > 0 ? (f1Shares/totalInitialShares)*100 : 0).toFixed(1)}%</td>
+                    <td class="p-3 text-right text-slate-300">${preAF1Pct.toFixed(1)}%</td>
+                    <td class="p-3 text-right font-medium text-white">${postAF1Pct.toFixed(1)}%</td>
+                    <td class="p-3 text-right text-slate-400">${Math.round(finalF1Shares).toLocaleString()}</td>
+                    <td class="p-3 text-right text-emerald-400 font-semibold">$${Math.round((postAF1Pct/100)*aPostVal).toLocaleString()}</td>
+                </tr>
+                <tr class="hover:bg-slate-800/30 transition-colors">
+                    <td class="p-3 font-medium text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-700"></span> Tech Co-Founder</td>
+                    <td class="p-3 text-right text-slate-300">${(totalInitialShares > 0 ? (f2Shares/totalInitialShares)*100 : 0).toFixed(1)}%</td>
+                    <td class="p-3 text-right text-slate-300">${preAF2Pct.toFixed(1)}%</td>
+                    <td class="p-3 text-right font-medium text-white">${postAF2Pct.toFixed(1)}%</td>
+                    <td class="p-3 text-right text-slate-400">${Math.round(finalF2Shares).toLocaleString()}</td>
+                    <td class="p-3 text-right text-slate-300">$${Math.round((postAF2Pct/100)*aPostVal).toLocaleString()}</td>
+                </tr>
+                <tr class="hover:bg-slate-800/30 transition-colors">
+                    <td class="p-3 font-medium text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-cyan-500"></span> SAFE Note Investors</td>
+                    <td class="p-3 text-right text-slate-500">-</td>
+                    <td class="p-3 text-right text-slate-300">${preASafePct.toFixed(1)}%</td>
+                    <td class="p-3 text-right font-medium text-white">${postASafePct.toFixed(1)}%</td>
+                    <td class="p-3 text-right text-slate-400">${Math.round(finalSafeShares).toLocaleString()}</td>
+                    <td class="p-3 text-right text-slate-300">$${Math.round((postASafePct/100)*aPostVal).toLocaleString()}</td>
+                </tr>
+                <tr class="hover:bg-slate-800/30 transition-colors">
+                    <td class="p-3 font-medium text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> Series A Preferred Investors</td>
+                    <td class="p-3 text-right text-slate-500">-</td>
+                    <td class="p-3 text-right text-slate-500">-</td>
+                    <td class="p-3 text-right font-medium text-white">${postAInvestorPct.toFixed(1)}%</td>
+                    <td class="p-3 text-right text-slate-400">${Math.round(finalInvestorShares).toLocaleString()}</td>
+                    <td class="p-3 text-right text-slate-300">$${Math.round((postAInvestorPct/100)*aPostVal).toLocaleString()}</td>
+                </tr>
+                <tr class="hover:bg-slate-800/30 transition-colors">
+                    <td class="p-3 font-medium text-slate-400 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-500"></span> Post-A Stock Option Pool</td>
+                    <td class="p-3 text-right text-slate-500">-</td>
+                    <td class="p-3 text-right text-slate-500">-</td>
+                    <td class="p-3 text-right font-medium text-slate-400">${postAPoolPct.toFixed(1)}%</td>
+                    <td class="p-3 text-right text-slate-400">${Math.round(finalPoolShares).toLocaleString()}</td>
+                    <td class="p-3 text-right text-slate-400">$${Math.round((postAPoolPct/100)*aPostVal).toLocaleString()}</td>
+                </tr>
+            `;
+        }
+
+        function renderProgressionBar(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            items.forEach(item => {
+                if (item.val > 0) {
+                    const block = document.createElement('div');
+                    block.className = `${item.color} h-full transition-all duration-300 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden`;
+                    block.style.width = `${item.val}%`;
+                    block.title = `${item.val.toFixed(1)}%`;
+                    if (item.val > 6) {
+                        block.innerText = item.val.toFixed(0) + '%';
+                    }
+                    container.appendChild(block);
+                }
+            });
+        }
+
+        // --- FINANCIAL RUNWAY OPERATIONAL MATH ENGINE ---
+        function calculateRunway() {
+            const startingCash = parseFloat(document.getElementById('runway-cash').value) || 0;
+            const grossBurn = parseFloat(document.getElementById('runway-burn').value) || 0;
+            const monthlyRev = parseFloat(document.getElementById('runway-revenue').value) || 0;
+
+            const netBurn = grossBurn - monthlyRev;
+            document.getElementById('runway-net-burn').innerText = '$' + netBurn.toLocaleString();
+            
+            const netBurnBox = document.getElementById('runway-net-burn');
+            if(netBurn > 0) {
+                netBurnBox.className = "text-2xl font-bold text-rose-400 mt-2";
+            } else {
+                netBurnBox.className = "text-2xl font-bold text-emerald-400 mt-2";
+            }
+
+            const monthsEl = document.getElementById('runway-months');
+            const subEl = document.getElementById('runway-status-sub');
+            const advisory = document.getElementById('runway-advisory-box');
+
+            if (netBurn <= 0) {
+                monthsEl.innerText = "∞ Months";
+                monthsEl.className = "text-2xl font-bold text-emerald-400 mt-2";
+                subEl.innerText = "Default Alive status achieved. Operations break even.";
+                
+                advisory.className = "p-4 rounded-xl border bg-emerald-500/10 border-emerald-500/20 text-emerald-300 flex items-start gap-3";
+                advisory.innerHTML = `
+                    <span class="text-base">🚀</span>
+                    <div class="text-xs">
+                        <strong>Financial Equilibrium Status: Infinite Runway.</strong> Your inbound engineering/product revenue fully outpaces operations expenditure. You are completely autonomous from urgent investor reliance.
+                    </div>`;
+                renderRunwayGraph(startingCash, 0);
+                return;
+            }
+
+            const runwayMonths = startingCash / netBurn;
+            monthsEl.innerText = runwayMonths.toFixed(1) + " Months";
+            
+            if (runwayMonths < 6) {
+                monthsEl.className = "text-2xl font-bold text-rose-500 mt-2";
+                subEl.innerText = "CRITICAL RUNWAY DEPLETION ALERT";
+                advisory.className = "p-4 rounded-xl border bg-rose-500/10 border-rose-500/20 text-rose-300 flex items-start gap-3";
+                advisory.innerHTML = `
+                    <span class="text-base">⚠️</span>
+                    <div class="text-xs">
+                        <strong>Red Horizon Threat Detected (&lt;6 Months).</strong> Legal, payroll, and infrastructure capacities face shutdown without swift capitalization rounds, strict cost reductions, or rapid market closing. Focus exclusively on sales or pitching SAFE instruments.
+                    </div>`;
+            } else if (runwayMonths < 12) {
+                monthsEl.className = "text-2xl font-bold text-amber-400 mt-2";
+                subEl.innerText = "Fundraising Runway Window Active";
+                advisory.className = "p-4 rounded-xl border bg-amber-500/10 border-amber-500/20 text-amber-300 flex items-start gap-3";
+                advisory.innerHTML = `
+                    <span class="text-base">⏳</span>
+                    <div class="text-xs">
+                        <strong>Fundraising Window Engaged (6-12 Months).</strong> Enterprise venture capital cycles take between 3 to 6 months to close completely. Initiate discussions with local angels, Launch Tennessee connections, or scale your institutional pitch sequences now.
+                    </div>`;
+            } else {
+                monthsEl.className = "text-2xl font-bold text-emerald-400 mt-2";
+                subEl.innerText = "Healthy Capital Flight Path";
+                advisory.className = "p-4 rounded-xl border bg-emerald-500/10 border-emerald-500/20 text-emerald-300 flex items-start gap-3";
+                advisory.innerHTML = `
+                    <span class="text-base">🛡️</span>
+                    <div class="text-xs">
+                        <strong>Operationally Insulated Base (&gt;12 Months).</strong> Your capital runway is secure. Prioritize maximizing core software validation engineering objectives and achieving structural product-market milestones before seeking more equity dilution.
+                    </div>`;
+            }
+
+            renderRunwayGraph(startingCash, netBurn);
+        }
+
+        function renderRunwayGraph(startingCash, netBurn) {
+            const container = document.getElementById('chart-runway-container');
+            container.innerHTML = '';
+            
+            let workingCash = startingCash;
+            for (let i = 0; i <= 12; i++) {
+                const heightPct = startingCash > 0 ? Math.max(0, (workingCash / startingCash) * 100) : 0;
+                
+                const barColumn = document.createElement('div');
+                barColumn.className = "w-6 sm:w-12 flex flex-col items-center group relative";
+                
+                let barBg = "bg-emerald-500 hover:bg-emerald-400";
+                if (workingCash <= 0) barBg = "bg-slate-800";
+                else if ((workingCash / (netBurn || 1)) < 6) barBg = "bg-rose-500 hover:bg-rose-400";
+                else if ((workingCash / (netBurn || 1)) < 12) barBg = "bg-amber-500 hover:bg-amber-400";
+
+                barColumn.innerHTML = `
+                    <div class="text-[9px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity absolute -top-5 bg-slate-950 px-1 py-0.5 rounded border border-slate-800 whitespace-nowrap z-10 shadow-lg">
+                        $${Math.round(workingCash).toLocaleString()}
+                    </div>
+                    <div class="${barBg} w-full rounded-t-sm transition-all duration-300" style="height: ${Math.max(4, heightPct)}px"></div>
+                `;
+                
+                container.appendChild(barColumn);
+                workingCash -= netBurn;
+            }
+        }
+
+        // --- STEP BY STEP ACCORDION CONTROL CONTROLS ---
+        function togglePlaybookAccordion(id) {
+            const body = document.getElementById(`body-${id}`);
+            const arrow = document.getElementById(`arrow-${id}`);
+            if (body.classList.contains('hidden')) {
+                body.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                body.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
+
+        // --- PITCH AUDITOR DATA STRUCTS & LOGIC ENGINES ---
+        const pitchSlidesData = [
+            { id: 1, title: "1. The Incontrovertible Problem Hook", desc: "Explicitly document an expensive, painful market structural deficiency with clear metrics. Avoid abstract general concepts." },
+            { id: 2, title: "2. The Targeted Product Solution Architecture", desc: "Showcase screenshots, layout schematics, or microservice architecture maps showing how your engineering natively resolves the stated problem." },
+            { id: 3, title: "3. Market Sizing Mapping (TAM, SAM, SOM)", desc: "Quantify the Bottom-Up addressable scale. (e.g. Total Available Market, Serviceable Market, Share of Market targets)." },
+            { id: 4, title: "4. Monetization Strategy & SaaS Unit Economics", desc: "Define pricing models, contract targets, expansion engines, and target customer life-time value limits vs onboarding costs." },
+            { id: 5, title: "5. Validation, Validation & Engineering Traction", desc: "Hard evidence proofs: developer signups, active corporate pilots, user retention rates, or binding enterprise LOIs." },
+            { id: 6, title: "6. Competitor Matrix & Structural Moats", desc: "A grid plotting your differentiation. Clearly map engineering defensive mechanisms, IP advantages, data networks, or speed moats." },
+            { id: 7, title: "7. Scalable Go-To-Market Vectors", desc: "Exactly how you scale distribution cost-effectively (e.g. open-source dev adoption, direct sales channels, strategic technical integrations)." },
+            { id: 8, title: "8. Technical Executive Team & Engineering Pedigree", desc: "Highlight code and hardware delivery capabilities, past engineering successes, and relevant commercialization backgrounds." },
+            { id: 9, title: "9. High-Fidelity 3-Year Operational Projections", desc: "A clear model outlining headcount buildouts, technical server costs, MRR growth paths, and required capital deployment velocity." },
+            { id: 10, title: "10. 'The Ask' Allocation Financial Framework", desc: "Specify precisely how much capital you are raising, using which instrument (e.g. SAFE note cap limits), and what key milestones that capital buys." }
+        ];
+
+        function initPitchChecklist() {
+            const box = document.getElementById('pitch-checklist-box');
+            box.innerHTML = '';
+            pitchSlidesData.forEach(slide => {
+                const item = document.createElement('div');
+                item.className = "flex items-start gap-3 p-3 bg-slate-950/60 rounded-xl border border-slate-800/80 hover:border-slate-700 transition-all cursor-pointer select-none";
+                item.onclick = () => togglePitchCheckbox(slide.id);
+                item.innerHTML = `
+                    <div class="pt-0.5">
+                        <input type="checkbox" id="chk-pitch-${slide.id}" class="rounded text-emerald-500 focus:ring-0 bg-slate-900 border-slate-700 w-4 h-4 accent-emerald-500 pointer-events-none">
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-semibold text-white tracking-wide">${slide.title}</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">${slide.desc}</p>
+                    </div>
+                `;
+                box.appendChild(item);
+            });
+        }
+
+        function togglePitchCheckbox(id) {
+            const chk = document.getElementById(`chk-pitch-${id}`);
+            chk.checked = !chk.checked;
+            updatePitchScore();
+        }
+
+        // Quick audit benchmarking tool
+        function selectAllPitchItems() {
+            pitchSlidesData.forEach(slide => {
+                document.getElementById(`chk-pitch-${slide.id}`).checked = true;
+            });
+            updatePitchScore();
+        }
+
+        function updatePitchScore() {
+            let checkedCount = 0;
+            pitchSlidesData.forEach(slide => {
+                if (document.getElementById(`chk-pitch-${slide.id}`).checked) {
+                    checkedCount++;
+                }
+            });
+
+            const total = pitchSlidesData.length;
+            const pct = Math.round((checkedCount / total) * 100);
+            
+            document.getElementById('pitch-score-text').innerText = pct + '%';
+            
+            const ring = document.getElementById('pitch-score-ring');
+            const circumference = 2 * Math.PI * 42; 
+            const offset = circumference - (pct / 100) * circumference;
+            ring.style.strokeDashoffset = offset;
+
+            const feedback = document.getElementById('pitch-feedback-msg');
+            if (pct === 0) {
+                feedback.innerText = "Select components of your investment deck architecture to execute qualitative structure assessments.";
+            } else if (pct < 40) {
+                feedback.innerHTML = "🔴 <strong class='text-rose-400'>Insufficient Investment Foundation.</strong> Critical foundational elements are absent. Investors will screen this out instantly. Ensure the Problem, Solution, and Core Metrics slots are secured first.";
+            } else if (pct < 80) {
+                feedback.innerHTML = "🟡 <strong class='text-amber-400'>Viable Narrative Emerging.</strong> Good skeletal architecture. However, missing key scaling indicators like concrete GTM structures, detailed unit economics, or clear data moats. Push closer to 100%.";
+            } else if (pct < 100) {
+                feedback.innerHTML = "🟢 <strong class='text-emerald-400'>Institutional Grade Deck.</strong> The primary building blocks of an expert fundraising narrative are present. Review language carefully to ensure technical details are translated smoothly into business values.";
+            } else {
+                feedback.innerHTML = "✨ <strong class='text-emerald-400'>Optimal Asset Readiness.</strong> All 10 key investment pillars are integrated into your deck architecture. Ensure your financial models precisely match the allocation structure stated in 'The Ask' slide.";
+            }
+        }
+
+        // Immediate application initialization loops
+        window.onload = function() {
+            calculateCapTable();
+            calculateRunway();
+            initPitchChecklist();
+        };
+    </script>
+</body>
+</html>
